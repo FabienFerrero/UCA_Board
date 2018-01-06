@@ -8,8 +8,25 @@ This PCB was developed to ease connection between an Arduino Mini Pro, and RFM95
 
 Codes for the microcontroller can be found on this link in the Arduino section : https://github.com/CongducPham/LowCostLoRaGw
 
-Bill Of Material
+*Bill Of Material
 TBD
+
+*Wiring
+
+```
+ Arduino Mini       LoRa RFM95W 
+ Mini Pro           Module
+ D8          <----> RST
+ MISO  (D12) <----> MISO
+ MOSI  (D11) <----> MOSI
+ SCK   (D13) <----> CLK
+ SS    (D10) <----> SEL (Chip Select)
+ D2          <----> DIO0
+ D7          <----> DIO1
+ D9          <----> DIO2
+ 3.3V        <----> Vcc
+
+ ```
 
 
 All rights reserved. This Gerber, program and the accompanying materials are made available under the terms of the MIT License which accompanies this distribution, and is available at https://opensource.org/licenses/mit-license.php
