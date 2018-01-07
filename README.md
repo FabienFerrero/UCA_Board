@@ -4,6 +4,8 @@
 Version 1.0.0, November, 2017
 Author: Fabien Ferrero
 
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA.jpg">
+
 This PCB was developed to ease connection between an Arduino Mini Pro, and RFM95 LoRa module, AA battery and a printed antenna.
 
 Codes for the microcontroller can be found on this link in the Arduino section : https://github.com/CongducPham/LowCostLoRaGw
