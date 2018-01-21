@@ -10,10 +10,15 @@ This PCB was developed to ease connection between an Arduino Mini Pro, and RFM95
 
 Codes for the microcontroller can be found on this link in the Arduino section : https://github.com/CongducPham/LowCostLoRaGw
 
-*Bill Of Material
-TBD
+# Bill Of Material
 
-*Wiring
+* Arduino Mini Pro 3.3V 8MHz
+* RFM95
+
+Optional :
+
+
+# Wiring
 
 ```
  Arduino Mini       LoRa RFM95W 
