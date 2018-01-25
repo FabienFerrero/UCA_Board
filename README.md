@@ -35,6 +35,13 @@ Optional :
 
  ```
 
+# Librairies
+
+You will need some librairies to run the code :
+
+*Modified LMIC Lib (pay attention that the original IBM LoRa LMIC occupy more space in your arduino, and this one is more optimized
+
+https://github.com/matthijskooijman/arduino-lmic
 
 All rights reserved. This Gerber, program and the accompanying materials are made available under the terms of the MIT License which accompanies this distribution, and is available at https://opensource.org/licenses/mit-license.php
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
