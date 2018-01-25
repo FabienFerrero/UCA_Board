@@ -43,6 +43,8 @@ You will need some librairies to run the code :
 
 https://github.com/matthijskooijman/arduino-lmic
 
+# License
+
 All rights reserved. This Gerber, program and the accompanying materials are made available under the terms of the MIT License which accompanies this distribution, and is available at https://opensource.org/licenses/mit-license.php
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
