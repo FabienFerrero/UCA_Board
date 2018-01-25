@@ -39,9 +39,13 @@ Optional :
 
 You will need some librairies to run the code :
 
-*Modified LMIC Lib (pay attention that the original IBM LoRa LMIC occupy more space in your arduino, and this one is more optimized
+* Modified LMIC Lib (pay attention that the original IBM LoRa LMIC occupy more space in your arduino, and this one is more optimized
 
 https://github.com/matthijskooijman/arduino-lmic
+
+* Low-Power librairies
+
+https://github.com/rocketscream/Low-Power
 
 # License
 
