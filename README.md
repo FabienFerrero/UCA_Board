@@ -50,6 +50,3 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 Maintained by Fabien Ferrero
 
-Changes for ESP32 by Jac Kersing, don't blame Maarten... See the note at the end for what (should) work.
-
-Gerber Layout of the UCA board
