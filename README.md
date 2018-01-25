@@ -17,6 +17,8 @@ Codes for the microcontroller can be found on this link in the Arduino section :
 
 Optional :
 
+* DHT-22 ( temperature and humidity sensor)
+
 
 # Wiring
 
