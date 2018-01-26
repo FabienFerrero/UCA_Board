@@ -50,10 +50,8 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 #include  "adcvcc.h"
-
-//#include <BME280I2C.h>
 #include "LowPower.h"
-#include "keys.h"
+
 
 #define debugSerial Serial
 #define SHOW_DEBUGINFO
