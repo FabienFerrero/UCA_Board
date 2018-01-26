@@ -41,9 +41,7 @@
 #include <SPI.h>
 #include <Wire.h>
 #include  "adcvcc.h"
-
 #include "LowPower.h"
-#include "keys.h"
 
 #define debugSerial Serial
 #define SHOW_DEBUGINFO
