@@ -1,3 +1,3 @@
 # This section is dedicated to the antenna part.
 
-* Some tutorials are proposed to tune the propose antenna
+* Antennas are very sensitive to the environment, a tutorial is proposed to tune the UCA antenna
