@@ -45,6 +45,8 @@ You will need some librairies to run the code :
 
 https://github.com/matthijskooijman/arduino-lmic
 
+If you want to support Asian 923 bands (for Vietnam for example), you can use this librairy : https://github.com/orenonline/arduino-lmic-as923/blob/master/src/lmic/lorabase.h
+
 * Low-Power librairies
 
 https://github.com/rocketscream/Low-Power
