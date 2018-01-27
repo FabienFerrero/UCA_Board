@@ -391,7 +391,7 @@ static CONST_TABLE(u1_t, DRADJUST)[2+TXCONF_ATTEMPTS] = {
 static CONST_TABLE(ostime_t, DR2HSYM_osticks)[] = {
 #if defined(CFG_eu868)
 #define dr2hsym(dr) (TABLE_GET_OSTIME(DR2HSYM_osticks, (dr)))
-    us2osticksRound(128<<7),  // DR_SF12
+    us2osticksRound(128<<7),  // 
     us2osticksRound(128<<6),  // DR_SF11
     us2osticksRound(128<<5),  // DR_SF10
     us2osticksRound(128<<4),  // DR_SF9
@@ -1125,7 +1125,7 @@ static void setBcnRxParams (void) {
 static void initJoinLoop (void) {
     LMIC.txChnl = os_getRndU1() % 3;
     LMIC.adrTxPow = 14;
-    setDrJoin(DRCHG_SET, DR_SF12);  //original SF is 7
+    setDrJoin(DRCHG_SET, DR_SF7);  //original SF is 7
     initDefaultChannels(1);
     ASSERT((LMIC.opmode & OP_NEXTCHNL)==0);
     LMIC.txend = LMIC.bands[BAND_MILLI].avail + rndDelay(8);
