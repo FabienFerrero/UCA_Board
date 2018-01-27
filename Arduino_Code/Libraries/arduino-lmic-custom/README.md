@@ -1,3 +1,5 @@
+Fabien  : In lmic.c, setDrJoin() for AS923 bands was modified from original from SF12 to SF7
+
 
 Arduino-LMIC library
 ====================
