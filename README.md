@@ -39,17 +39,7 @@ Optional :
 
 # Librairies
 
-You will need some librairies to run the code :
-
-* Modified LMIC Lib (pay attention that the original IBM LoRa LMIC occupy more space in your arduino, and this one is more optimized
-
-https://github.com/matthijskooijman/arduino-lmic
-
-If you want to support Asian 923 bands (for Vietnam for example), you can use this librairy : https://github.com/orenonline/arduino-lmic-as923/blob/master/src/lmic/lorabase.h
-
-* Low-Power librairies
-
-https://github.com/rocketscream/Low-Power
+You will need some librairies to run the code, you can look in the libraries section to find the different libs needed for running the code.
 
 # License
 
