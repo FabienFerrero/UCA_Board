@@ -113,19 +113,19 @@ void setDataRate() {
   switch (LMIC.datarate) {
     case DR_SF12:
       debugPrintLn(F("Datarate: SF12"));
-      TX_INTERVAL = 300;
+      TX_INTERVAL = 4800;
       break;
     case DR_SF11: debugPrintLn(F("Datarate: SF11"));
-      TX_INTERVAL = 300;
+      TX_INTERVAL = 2400;
       break;
     case DR_SF10: debugPrintLn(F("Datarate: SF10"));
-      TX_INTERVAL = 300;
+      TX_INTERVAL = 1200;
       break;
     case DR_SF9: debugPrintLn(F("Datarate: SF9"));
-      TX_INTERVAL = 300;
+      TX_INTERVAL = 600;
       break;
     case DR_SF8: debugPrintLn(F("Datarate: SF8"));
-      TX_INTERVAL = 300;
+      TX_INTERVAL = 360;
       break;
     case DR_SF7: debugPrintLn(F("Datarate: SF7"));
       TX_INTERVAL = 180;
