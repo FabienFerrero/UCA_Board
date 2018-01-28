@@ -1,5 +1,4 @@
 
-
 /*******************************************************************************
    Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
 
@@ -9,10 +8,7 @@
    including, but not limited to, copying, modification and redistribution.
    NO WARRANTY OF ANY KIND IS PROVIDED.
 
-   This example sends a valid LoRaWAN packet with payload "Hello,
-   world!", using frequency and encryption settings matching those of
-   the The Things Network.
-
+   
    This uses OTAA (Over-the-air activation), where where a DevEUI and
    application key is configured, which are used in an over-the-air
    activation procedure where a DevAddr and session keys are
@@ -29,7 +25,6 @@
 
    Do not forget to define the radio type correctly in config.h.
 
- *******************************************************************************/
 /*******************************************************************************
  This exemples has been modified by Fabien Ferrero to work on UCA board 
  and to send various sensors payload
@@ -37,20 +32,20 @@
  */
 
 
+
 #include <lmic.h>
 #include <hal/hal.h>
 #include <SPI.h>
 #include <Wire.h>
+#include "LowPower.h"
+
+//Sensors librairies
 
 #include "DHT.h"
 #define DHTPIN 6     // what pin we're connected to
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 
 
-DHT dht(DHTPIN, DHTTYPE);
-
-#include  "adcvcc.h"
-#include "LowPower.h"
 
 
 #define debugSerial Serial
@@ -97,25 +92,8 @@ static float humidity = 0.0;
 static float batvalue;
 
 
+DHT dht(DHTPIN, DHTTYPE);
 
-/* ======================================================================
-  Function: ADC_vect
-  Purpose : IRQ Handler for ADC
-  Input   : -
-  Output  : -
-  Comments: used for measuring 8 samples low power mode, ADC is then in
-          free running mode for 8 samples
-  ====================================================================== */
-ISR(ADC_vect)
-{
-  // Increment ADC counter
-  _adc_irq_cnt++;
-}
-
-
-// Schedule TX every this many seconds (might become longer due to duty
-// cycle limitations).
-unsigned int TX_INTERVAL = 300;
 
 // Pin mapping
 const lmic_pinmap lmic_pins = {
@@ -125,31 +103,63 @@ const lmic_pinmap lmic_pins = {
   .dio = {2, 7, 9},
 };
 
+// ---------------------------------------------------------------------------------
+// Functions
+// ---------------------------------------------------------------------------------
+
+
+// Schedule TX every this many seconds (might become longer due to duty
+// cycle limitations).
+unsigned int TX_INTERVAL = 300;
+
 void setDataRate() {
   switch (LMIC.datarate) {
     case DR_SF12:
-      debugPrintLn(F("Datarate: SF12"));
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("Datarate: SF12"));
+    #endif      
       TX_INTERVAL = 4800;
       break;
-    case DR_SF11: debugPrintLn(F("Datarate: SF11"));
+    case DR_SF11: 
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("Datarate: SF11"));
+    #endif
       TX_INTERVAL = 2400;
       break;
-    case DR_SF10: debugPrintLn(F("Datarate: SF10"));
+    case DR_SF10: 
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("Datarate: SF10"));
+    #endif
       TX_INTERVAL = 1200;
       break;
-    case DR_SF9: debugPrintLn(F("Datarate: SF9"));
+    case DR_SF9: 
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("Datarate: SF9"));
+    #endif
       TX_INTERVAL = 600;
       break;
-    case DR_SF8: debugPrintLn(F("Datarate: SF8"));
+    case DR_SF8: 
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("Datarate: SF8"));
+    #endif
       TX_INTERVAL = 360;
       break;
-    case DR_SF7: debugPrintLn(F("Datarate: SF7"));
+    case DR_SF7: 
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("Datarate: SF7"));
+    #endif
       TX_INTERVAL = 180;
       break;
-    case DR_SF7B: debugPrintLn(F("Datarate: SF7B"));
+    case DR_SF7B: 
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("Datarate: SF7B"));
+    #endif
       TX_INTERVAL = 180;
       break;
-    case DR_FSK: debugPrintLn(F("Datarate: FSK"));
+    case DR_FSK: 
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("Datarate: FSK"));
+    #endif
       TX_INTERVAL = 180;
       break;
     default: debugPrint(F("Datarate Unknown Value: "));
@@ -207,6 +217,20 @@ void do_sleep(unsigned int sleepyTime) {
   addMillis(sleepyTime * 1000);
 }
 
+
+long readVcc() {
+  long result;
+  // Read 1.1V reference against AVcc
+  ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
+  delay(2); // Wait for Vref to settle
+  ADCSRA |= _BV(ADSC); // Convert
+  while (bit_is_set(ADCSRA,ADSC));
+  result = ADCL;
+  result |= ADCH<<8;
+  result = 1126400L / result; // Back-calculate AVcc in mV
+  return result;
+}
+
 void updateEnvParameters()
 {
   temp = dht.readTemperature();
@@ -218,7 +242,7 @@ void updateEnvParameters()
   // print out the value you read:
   Serial.print("Humidity : ");
   Serial.println(humidity);
-  Serial.print("T°c : ");
+  Serial.print("TÂ°c : ");
   Serial.println(temp);
   Serial.print("Vbatt : ");
   Serial.println(batvalue);
@@ -228,14 +252,21 @@ void updateEnvParameters()
 
 
 void onEvent (ev_t ev) {
+  #ifdef SHOW_DEBUGINFO
   Serial.print(os_getTime());
   Serial.print(": ");
+  #endif
   switch (ev) {
     case EV_SCAN_TIMEOUT:
-      //debugPrintLn(F("EV_SCAN_TIMEOUT"));
+    #ifdef SHOW_DEBUGINFO
+  debugPrintLn(F("EV_SCAN_TIMEOUT"));
+  #endif
+     
       break;
     case EV_BEACON_FOUND:
-      //debugPrintLn(F("EV_BEACON_FOUND"));
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("EV_BEACON_FOUND"));
+    #endif      
       break;
     case EV_BEACON_MISSED:
       //debugPrintLn(F("EV_BEACON_MISSED"));
@@ -244,33 +275,56 @@ void onEvent (ev_t ev) {
       //debugPrintLn(F("EV_BEACON_TRACKED"));
       break;
     case EV_JOINING:
-      debugPrintLn(F("EV_JOINING"));
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("EV_JOINING"));
+    #endif      
       break;
     case EV_JOINED:
-      debugPrintLn(F("EV_JOINED"));
-      setDataRate();
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("EV_JOINED"));
+    #endif      
+      setDataRate();      
       // Ok send our first data in 10 ms
       os_setTimedCallback(&sendjob, os_getTime() + ms2osticks(10), do_send);
       break;
     case EV_RFU1:
-      debugPrintLn(F("EV_RFU1"));
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("EV_RFU1"));
+    #endif
+      
       break;
     case EV_JOIN_FAILED:
-      debugPrintLn(F("EV_JOIN_FAILED"));
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("EV_JOIN_FAILED"));
+    #endif
+      
       lmicStartup(); //Reset LMIC and retry
       break;
     case EV_REJOIN_FAILED:
-      debugPrintLn(F("EV_REJOIN_FAILED"));
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("EV_REJOIN_FAILED"));
+    #endif
+      
       lmicStartup(); //Reset LMIC and retry
       break;
     case EV_TXCOMPLETE:
-      debugPrintLn(F("EV_TXCOMPLETE (includes waiting for RX windows)"));
+
+    #ifdef SHOW_DEBUGINFO
+    debugPrintLn(F("EV_TXCOMPLETE (includes waiting for RX windows)"));
+    #endif
+      
       if (LMIC.txrxFlags & TXRX_ACK)
-        debugPrintLn(F("Received ack"));
+      #ifdef SHOW_DEBUGINFO
+      debugPrintLn(F("Received ack"));
+      #endif
+        
       if (LMIC.dataLen) {
+        #ifdef SHOW_DEBUGINFO
         debugPrintLn(F("Received "));
         debugPrintLn(LMIC.dataLen);
         debugPrintLn(F(" bytes of payload"));
+        #endif 
+       
       }
             // Schedule next transmission
       setDataRate();
@@ -278,26 +332,39 @@ void onEvent (ev_t ev) {
       os_setCallback(&sendjob, do_send);
       break;
     case EV_LOST_TSYNC:
+      #ifdef SHOW_DEBUGINFO
       debugPrintLn(F("EV_LOST_TSYNC"));
+      #endif      
       break;
     case EV_RESET:
+      #ifdef SHOW_DEBUGINFO
       debugPrintLn(F("EV_RESET"));
+      #endif        
       break;
     case EV_RXCOMPLETE:
       // data received in ping slot
+      #ifdef SHOW_DEBUGINFO
       debugPrintLn(F("EV_RXCOMPLETE"));
+      #endif      
       break;
     case EV_LINK_DEAD:
+      #ifdef SHOW_DEBUGINFO
       debugPrintLn(F("EV_LINK_DEAD"));
+      #endif       
       break;
     case EV_LINK_ALIVE:
+      #ifdef SHOW_DEBUGINFO
       debugPrintLn(F("EV_LINK_ALIVE"));
+      #endif       
       break;
     default:
+      #ifdef SHOW_DEBUGINFO
       debugPrintLn(F("Unknown event"));
+      #endif      
       break;
   }
 }
+
 
 void do_send(osjob_t* j) {
   // Check if there is not a current TX/RX job running
@@ -320,8 +387,6 @@ void do_send(osjob_t* j) {
     debugPrintLn(batvalue);
 #endif
     int t = (int)((temp) * 10.0);
-    // t = t + 40; => t [-40..+85] => [0..125] => t = t * 10; => t [0..125] => [0..1250]
-    
     int h = (int)(humidity * 2.0);
     int bat = batvalue; // multifly by 10 for V in Cayenne
 
@@ -348,42 +413,10 @@ void lmicStartup() {
   // Reset the MAC state. Session and pending data transfers will be discarded.
   LMIC_reset();
 
-#if defined(CFG_eu868)
-  // Set up the channels used by the Things Network, which corresponds
-  // to the defaults of most gateways. Without this, only three base
-  // channels from the LoRaWAN specification are used, which certainly
-  // works, so it is good for debugging, but can overload those
-  // frequencies, so be sure to configure the full frequency range of
-  // your network here (unless your network autoconfigures them).
-  // Setting up channels should happen after LMIC_setSession, as that
-  // configures the minimal channel set.
-  // NA-US channels 0-71 are configured automatically
-  LMIC_setupChannel(0, 868100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-  LMIC_setupChannel(1, 868300000, DR_RANGE_MAP(DR_SF12, DR_SF7B), BAND_CENTI);      // g-band
-  LMIC_setupChannel(2, 868500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-  LMIC_setupChannel(3, 867100000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-  LMIC_setupChannel(4, 867300000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-  LMIC_setupChannel(5, 867500000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-  LMIC_setupChannel(6, 867700000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-  LMIC_setupChannel(7, 867900000, DR_RANGE_MAP(DR_SF12, DR_SF7),  BAND_CENTI);      // g-band
-  LMIC_setupChannel(8, 868800000, DR_RANGE_MAP(DR_FSK,  DR_FSK),  BAND_MILLI);      // g2-band
-  // TTN defines an additional channel at 869.525Mhz using SF9 for class B
-  // devices' ping slots. LMIC does not have an easy way to define set this
-  // frequency and support for class B is spotty and untested, so this
-  // frequency is not configured here.
-#elif defined(CFG_us915)
-  // NA-US channels 0-71 are configured automatically
-  // but only one group of 8 should (a subband) should be active
-  // TTN recommends the second sub band, 1 in a zero based count.
-  // https://github.com/TheThingsNetwork/gateway-conf/blob/master/US-global_conf.json
-  LMIC_selectSubBand(1);
-#endif
-
-
-  LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);
-
   LMIC_setLinkCheckMode(1);
   LMIC_setAdrMode(1);
+  LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100); // Increase window time for clock accuracy problem
+  
 
   // Start job (sending automatically starts OTAA too)
   // Join the network, sending will be
@@ -393,9 +426,15 @@ void lmicStartup() {
 
 void setup() {
   Serial.begin(115200);
-  debugPrintLn(F("Starting"));
+  delay(1000); //Wait 1s in order to avoid UART programmer issues when a battery is used
   
+  Serial.begin(115200);
+  
+  #ifdef SHOW_DEBUGINFO
+  debugPrintLn(F("Starting"));
   delay(100);
+  #endif
+  
   Wire.begin();
 
   updateEnvParameters(); // To have value for the first Tx
@@ -410,3 +449,4 @@ void setup() {
 void loop() {
   os_runloop_once();
 }
+
