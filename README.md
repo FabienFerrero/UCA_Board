@@ -38,6 +38,11 @@ Optional :
 
  ```
 
+# Layout
+
+The layout of the PCB is available the gerber section.
+It has been designed to be fabricated on a 0.8mm-thick FR4 2 layer PCB.
+
 # Librairies
 
 You will need some librairies to run the code, you can look in the libraries section to find the different libs needed for running the code.
