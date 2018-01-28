@@ -18,7 +18,8 @@ Codes for the microcontroller can be found on this link in the Arduino section :
 Optional :
 
 * DHT-22 ( temperature and humidity sensor)
-
+* BME280 ( temperature, barometer and humidity sensor)
+* RGB LED
 
 # Wiring
 
