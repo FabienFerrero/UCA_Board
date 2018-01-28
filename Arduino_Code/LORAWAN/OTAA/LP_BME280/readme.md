@@ -1,4 +1,5 @@
 * LoRaWan OTAA activation
+* Adaptative Spreading factor
 * Low-power sleep between Tx 
 * BME280 sensor
 * Cayenne Payload
