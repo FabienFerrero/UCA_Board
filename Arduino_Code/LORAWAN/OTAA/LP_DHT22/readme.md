@@ -1,3 +1,14 @@
 This code has been modified from : https://github.com/tkerby/minilora-test
 
-A DHT22 is used to measure temperature and Humidity, and the data are formatted for LPP Cayenne.
+It includes :
+
+* LoRaWan OTAA activation
+* Adaptative Spreading factor
+* Low-power sleep between Tx 
+* DHT22 sensor for temperature and humidity
+* Cayenne Payload
+
+This code has been tested on EUR868 and AS923 bands
+
+The bands can be selected in config.h of Arduino_LMIC Lib
+
