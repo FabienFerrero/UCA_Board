@@ -23,6 +23,8 @@ Optional :
 * BME280 ( temperature, barometer and humidity sensor)
 * RGB LED
 
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_mounted.png">
+
 # Wiring
 
 ```
