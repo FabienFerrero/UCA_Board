@@ -8,7 +8,9 @@ Author: Fabien Ferrero
 
 This PCB was developed to ease connection between an Arduino Mini Pro, and RFM95 LoRa module, AA battery and a printed antenna.
 
-Codes for the microcontroller can be found on this link in the Arduino section : https://github.com/CongducPham/LowCostLoRaGw
+Codes for the microcontroller for LoRa communications can be found on this link in the Arduino section : https://github.com/CongducPham/LowCostLoRaGw
+
+I'm also including in this github some codes compatible with LoRaWan.
 
 # Bill Of Material
 
