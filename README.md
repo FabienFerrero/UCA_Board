@@ -50,7 +50,7 @@ The layout of the PCB is available the gerber section.
 It has been designed to be fabricated on a 0.8mm-thick FR4 2 layer PCB.
 Depending of your need, it can be fabricated with different thickness, but the antenna has to be adjusted.
 
-The board can be directly ordered on this link : <BR>
+The board can be directly ordered on this link : <BR><BR>
 <a href="https://www.pcbway.com/project/shareproject/UCA_Board.html"><img src="https://www.pcbway.com/project/img/images/frompcbway.png" alt="PCB from PCBWay"></img></a>
 
 # Librairies
