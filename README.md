@@ -10,7 +10,7 @@ This PCB was developed to ease connection between an Arduino Mini Pro, and RFM95
 
 Codes for the microcontroller for LoRa communications can be found on this link in the Arduino section : https://github.com/CongducPham/LowCostLoRaGw
 
-I'm also including in this github some codes compatible with LoRaWan.
+I'm also including in this github some codes compatible with LoRaWan in the /Arduino_Code section.
 
 # Bill Of Material
 
