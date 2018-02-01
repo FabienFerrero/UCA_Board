@@ -12,7 +12,7 @@ Codes for the microcontroller can be found on this link in the Arduino section :
 
 # Bill Of Material
 
-<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_top.jpg">
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_top.png">
 
 * Arduino Mini Pro 3.3V 8MHz
 * RFM95
