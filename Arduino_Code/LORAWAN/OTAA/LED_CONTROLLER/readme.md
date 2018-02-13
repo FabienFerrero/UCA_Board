@@ -1,4 +1,4 @@
-Code objective
+# What this code is doing ?
 * LoRaWan OTAA activation
 * Adaptative Spreading factor
 * Control a RGB LED
