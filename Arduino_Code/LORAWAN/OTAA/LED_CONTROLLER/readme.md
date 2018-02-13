@@ -4,7 +4,7 @@
 * Control a RGB LED
 * Cayenne LPP Payload
 
-The luminosity of each color can be adjusted from 0 to 255.
+The luminosity of each color can be adjusted from 0 to 255 using Cayenne my devices
 
 <img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/cayenne_LED.png">
 
