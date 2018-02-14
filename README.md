@@ -41,6 +41,8 @@ https://fr.aliexpress.com/item/Free-shipping-10Pcs-lot-Ultrasonic-Module-HC-SR04
 * Step-up voltage booster
 https://fr.aliexpress.com/item/5pcs-2-in-1-DC-DC-Step-Down-Step-Up-Converter-0-8V-6V-to-3/32759171595.html?spm=a2g0s.9042311.0.0.bMWhGH
 
+* 3-axis accelerometer : https://learn.sparkfun.com/tutorials/mma8452q-accelerometer-breakout-hookup-guide
+
 
 <img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_mounted.png">
 
