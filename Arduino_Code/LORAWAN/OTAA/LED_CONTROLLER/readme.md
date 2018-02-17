@@ -18,9 +18,9 @@ The bands can be selected in config.h of Arduino_LMIC Lib
 
 You can use https://mydevices.com/ to control your LED
 
-<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_Blue.png">
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/LED_Blue.png">
 
-<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_Green.png">
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/LED_Green.png">
 
-<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_Red.png">
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/LED_Red.png">
 
