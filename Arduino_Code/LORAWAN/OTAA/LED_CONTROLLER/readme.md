@@ -1,4 +1,4 @@
-# What this code is doing ?
+# What the code is doing ?
 * LoRaWan OTAA activation
 * Adaptative Spreading factor
 * Control a RGB LED
@@ -17,4 +17,10 @@ This code has been tested on EUR868 and AS923 bands
 The bands can be selected in config.h of Arduino_LMIC Lib
 
 You can use https://mydevices.com/ to control your LED
+
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_Blue.png">
+
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_Green.png">
+
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/UCA_Red.png">
 
