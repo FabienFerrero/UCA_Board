@@ -2,9 +2,9 @@ This code has been modified from : https://github.com/tkerby/minilora-test
 
 To register on the network, you need to specify :
 
-AppEUI :[8 Bytes] LSB format
-DevEUI :[8 Bytes] LSB format
-APPKEY :[8 Bytes] MSB format
+*AppEUI :[8 Bytes] LSB format <BR>
+*DevEUI :[8 Bytes] LSB format <BR>
+*APPKEY :[8 Bytes] MSB format <BR>
 
 
 It includes :
