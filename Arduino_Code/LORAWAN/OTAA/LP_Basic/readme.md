@@ -17,3 +17,6 @@ It includes :
 This code has been tested on EUR868 and AS923 bands
 
 The bands can be selected in config.h of Arduino_LMIC Lib
+
+The starting SF for the joining process can be changed in the LMIC library :
+lmic.c, change in  "setDrJoin()"
