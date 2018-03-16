@@ -368,11 +368,11 @@ void do_send(osjob_t* j) {
     
     int bat = batvalue; // multifly by 10 for V in Cayenne
 
-    unsigned char mydata[5];
-    mydata[1] = 0x2;  // 2nd Channel
-    mydata[2] = 0x2;  // Analog Value
-    mydata[3] = bat >> 8;
-    mydata[4] = bat & 0xFF;
+    unsigned char mydata[4];
+    mydata[0] = 0x2;  // 2nd Channel
+    mydata[1] = 0x2;  // Analog Value
+    mydata[2] = bat >> 8;
+    mydata[3] = bat & 0xFF;
         
     LMIC_setTxData2(1, mydata, sizeof(mydata), 0);
     debugPrintLn(F("PQ")); //Packet queued
