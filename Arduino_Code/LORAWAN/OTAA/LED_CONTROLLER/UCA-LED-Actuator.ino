@@ -375,23 +375,23 @@ void do_send(osjob_t* j) {
     
     int bat = batvalue; // multifly by 10 for V in Cayenne
 
-    unsigned char mydata[17];
-    mydata[1] = 0x2;  // 2nd Channel
-    mydata[2] = 0x2;  // Analog Value
-    mydata[3] = bat >> 8;
-    mydata[4] = bat & 0xFF;
-    mydata[5] = 0x6;  // 6th Channel
-    mydata[6] = 0x3;  // Analog Value PWM red
-    mydata[7] = LED_RED >> 8;
-    mydata[8] = LED_RED & 0xFF;
-    mydata[9] = 0x7;  // 7th Channel
-    mydata[10] = 0x3;  // Analog Value PWM red
-    mydata[11] = LED_BLUE >> 8;
-    mydata[12] = LED_BLUE & 0xFF;
-    mydata[13] = 0x8;  // 8th Channel
-    mydata[14] = 0x3;  // Analog Value PWM red
-    mydata[15] = LED_GREEN >> 8;
-    mydata[16] = LED_GREEN & 0xFF;
+    unsigned char mydata[16];
+    mydata[0] = 0x2;  // 2nd Channel
+    mydata[1] = 0x2;  // Analog Value
+    mydata[2] = bat >> 8;
+    mydata[3] = bat & 0xFF;
+    mydata[4] = 0x6;  // 6th Channel
+    mydata[5] = 0x3;  // Analog Value PWM red
+    mydata[6] = LED_RED >> 8;
+    mydata[7] = LED_RED & 0xFF;
+    mydata[8] = 0x7;  // 7th Channel
+    mydata[9] = 0x3;  // Analog Value PWM red
+    mydata[10] = LED_BLUE >> 8;
+    mydata[11] = LED_BLUE & 0xFF;
+    mydata[12] = 0x8;  // 8th Channel
+    mydata[13] = 0x3;  // Analog Value PWM red
+    mydata[14] = LED_GREEN >> 8;
+    mydata[15] = LED_GREEN & 0xFF;
     
     LMIC_setTxData2(1, mydata, sizeof(mydata), 0);
     debugPrintLn(F("PQ")); //Packet queued
