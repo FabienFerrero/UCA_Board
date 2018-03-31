@@ -36,7 +36,7 @@ https://fr.aliexpress.com/item/Free-Shipping-1pcs-DHT22-digital-temperature-and-
 https://fr.aliexpress.com/item/3In1-BME280-GY-BME280-Digital-Sensor-SPI-I2C-Humidity-Temperature-and-Barometric-Pressure-Sensor-Module-1/32830483099.html?spm=a2g0s.9042311.0.0.2GH3nf
 * RGB LED
 https://fr.aliexpress.com/item/100pcs-Ultra-Bright-Red-Green-Blue-SMT-SMD-LED-RGB-5050-LED-DIODE-Chip-Light-Emitting/32340120687.html?spm=a2g0s.9042311.0.0.RsBFuh
-* Ultrasound distance sensor
+* Ultrasound distance sensor (pay attention that this sensor need 5V to work properly, and you will need some resistor divider to not damage your Arduino board)
 https://fr.aliexpress.com/item/Free-shipping-10Pcs-lot-Ultrasonic-Module-HC-SR04-Distance-Measuring-Transducer-Sensor-for-ar-du-ino/32745224945.html?spm=a2g0s.9042311.0.0.RsBFuh
 * Step-up voltage booster
 https://fr.aliexpress.com/item/5pcs-2-in-1-DC-DC-Step-Down-Step-Up-Converter-0-8V-6V-to-3/32759171595.html?spm=a2g0s.9042311.0.0.bMWhGH
