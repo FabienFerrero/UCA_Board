@@ -1,1 +1,8 @@
-Please find here the slides of the different presentation about this work
+This project has been presented in different conferences :
+
+IWASI, , 
+
+The Thing Conference, Amsterdam, 02-2018
+
+Eucap, London, 04-2018
+
