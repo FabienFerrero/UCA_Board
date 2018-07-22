@@ -11,3 +11,6 @@ It includes :
 This code has been tested on EUR868 and AS923 bands
 
 The bands can be selected in config.h of Arduino_LMIC Lib
+
+
+UCA_Board/documents/pictures/TEMT6000_lx.png
