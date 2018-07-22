@@ -21,7 +21,8 @@ As shown is figure below, the photo transistor is mounted with a 10kohm resistor
 <img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/TEMT6000_sch.png">
 
 
-From the voltage measured on Sig PIN, the source current can be easily calculated, and the figure below extracted from the datasheet can be used to calculate the illuminance in Lx
+From the voltage measured on Sig PIN, the source current can be easily calculated, and the figure below extracted from the datasheet can be used to calculate the illuminance in Lx.
+The datasheet can be find in this link : https://www.vishay.com/docs/81579/temt6000.pdf
 
 
 <img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/TEMT6000_lx.jpg">
