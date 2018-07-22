@@ -26,4 +26,8 @@ From the voltage measured on Sig PIN, the source current can be easily calculate
 
 <img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/TEMT6000_lx.jpg">
 
+For Illuminance, the Cayenne LPP code is 101 (Hex is 65), the Data size is 2 Byte with a resoluation of 1 Lux (Unsigned MSB)
+
+
+
 
