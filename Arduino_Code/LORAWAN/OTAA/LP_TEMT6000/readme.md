@@ -18,6 +18,9 @@ This board can be find easily for less than 1€.
 
 As shown is figure below, the photo transistor is mounted with a 10kohm resistor.
 
+<img src="https://github.com/FabienFerrero/UCA_Board/blob/master/documents/pictures/TEMT6000_sch.png">
+
+
 From the voltage, the source current can be easily calculated, and the figure below extracted from the datasheet can be used to calculate the luminescence in Lx
 
 
