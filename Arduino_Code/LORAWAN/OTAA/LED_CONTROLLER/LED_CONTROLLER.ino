@@ -27,29 +27,27 @@
 
 /*******************************************************************************
  This exemples has been modified by Fabien Ferrero to work on UCA board 
- and to send various sensors payload
+ and to remotly control a RGB LED
  ****************************************************************************************
  */
-
-
 
 #include <lmic.h>
 #include <hal/hal.h>
 #include <SPI.h>
 #include <Wire.h>
-#include "LowPower.h"
 
 
-//Define sensor PIN
-
-
-#define PDPIN 6  // PIN with PIR Sensor Digital output
-
+//Sensors librairies
 
 #define debugSerial Serial
 #define SHOW_DEBUGINFO
 #define debugPrintLn(...) { if (debugSerial) debugSerial.println(__VA_ARGS__); }
 #define debugPrint(...) { if (debugSerial) debugSerial.print(__VA_ARGS__); }
+
+// Pin mapping for the RGBLED object:
+#define GREEN 3
+#define BLUE 6
+#define RED 5
 
 
 
@@ -59,13 +57,13 @@
 // first. When copying an EUI from ttnctl output, this means to reverse
 // the bytes. For TTN issued EUIs the last bytes should be 0xD5, 0xB3,
 // 0x70.
-static const u1_t PROGMEM APPEUI[8] = { 0xBA, 0xB1, 0x00, 0xD0, 0x7E, 0xD5, 0xB3, 0x70 };
+static const u1_t PROGMEM APPEUI[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 void os_getArtEui (u1_t* buf) {
   memcpy_P(buf, APPEUI, 8);
 }
 
 // This should also be in little endian format, see above.
-static const u1_t PROGMEM DEVEUI[8] = { 0x07, 0x00, 0x01, 0x00, 0x00, 0x1A, 0xFF, 0x50 };
+static const u1_t PROGMEM DEVEUI[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 void os_getDevEui (u1_t* buf) {
   memcpy_P(buf, DEVEUI, 8);
 }
@@ -74,25 +72,28 @@ void os_getDevEui (u1_t* buf) {
 // number but a block of memory, endianness does not really apply). In
 // practice, a key taken from ttnctl can be copied as-is.
 // The key shown here is the semtech default key.
-static const u1_t PROGMEM APPKEY[16] = { 0xD8, 0x8F, 0x0A, 0x3D, 0x16, 0x48, 0xD8, 0xB5, 0x5A, 0xF3, 0xBA, 0x36, 0x4A, 0x37, 0x05, 0x97 };
+static const u1_t PROGMEM APPKEY[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 void os_getDevKey (u1_t* buf) {
   memcpy_P(buf, APPKEY, 16);
 }
 
+
 static osjob_t sendjob;
 
-// global enviromental parameters
-
-static float batvalue;
-static boolean presence;
-static byte pres [128];
-static unsigned int pres_it = 0; 
-static float pres_avg = 0;
-static int waiting_presence = 0; // This boolean is incremented if no presence is detected during a sensing slot
 
 
+// global enviromental parameters : Place here the environment data you want to measure
 
-// Pin mapping
+
+static float batvalue = 0.0;
+
+static int LED_RED = 0;
+static int LED_BLUE = 0;
+static int LED_GREEN = 0;
+
+
+
+// Pin mapping for RFM95
 const lmic_pinmap lmic_pins = {
   .nss = 10,
   .rxtx = LMIC_UNUSED_PIN,
@@ -139,13 +140,13 @@ void setDataRate() {
     #ifdef SHOW_DEBUGINFO
     debugPrintLn(F("Datarate: SF8"));
     #endif
-      TX_INTERVAL = 300;
+      TX_INTERVAL = 360;
       break;
     case DR_SF7: 
     #ifdef SHOW_DEBUGINFO
     debugPrintLn(F("Datarate: SF7"));
     #endif
-      TX_INTERVAL = 180;
+      TX_INTERVAL = 30;
       break;
     case DR_SF7B: 
     #ifdef SHOW_DEBUGINFO
@@ -165,96 +166,11 @@ void setDataRate() {
   }
 }
 
-extern volatile unsigned long timer0_millis;
-void addMillis(unsigned long extra_millis) {
-  uint8_t oldSREG = SREG;
-  cli();
-  timer0_millis += extra_millis;
-  SREG = oldSREG;
-  sei();
+void setColor(int redValue,  int blueValue, int greenValue) {
+  analogWrite(RED, redValue);
+  analogWrite(GREEN, greenValue);
+  analogWrite(BLUE, blueValue);
 }
-
-void do_sleep(unsigned int sleepyTime) {
-  unsigned int eights = sleepyTime / 8;
-  unsigned int fours = (sleepyTime % 8) / 4;
-  unsigned int twos = ((sleepyTime % 8) % 4) / 2;
-  unsigned int ones = ((sleepyTime % 8) % 4) % 2;
-  unsigned int waiting = 225;
-
-
-
-if (waiting_presence == 2)
-
-{
-
-  #ifdef SHOW_DEBUGINFO
-  debugPrint(F("Sleeping for "));
-  debugPrint(waiting*8);
-  debugPrint(F(" seconds"));
-  debugPrint(F(" or wake up if an activity is detected"));
-  delay(50); //Wait for serial to complete
-#endif
-
- for ( int x = 0; x < waiting; x++) { // Sleep for 30mn if no movement detected
-    // put the processor to sleep for 8 seconds
-    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-      if ( digitalRead(PDPIN)) { // if a movement is detected, send an uplink and move back to normal mode
-     waiting_presence = 0 ;
-     pres [0] = 1;
-     pres_it = 0;
-     return;
-      }
-    }
-}
-
-else { 
-
-  #ifdef SHOW_DEBUGINFO
-  debugPrint(F("Sleeping for "));
-  debugPrint(sleepyTime);
-  debugPrint(F(" seconds = "));
-  debugPrint(eights);
-  debugPrint(F(" x 8 + "));
-  debugPrint(fours);
-  debugPrint(F(" x 4 + "));
-  debugPrint(twos);
-  debugPrint(F(" x 2 + "));
-  debugPrintLn(ones);
-  delay(50); //Wait for serial to complete
-#endif
-  
-  for ( int x = 0; x < eights; x++) {
-    // put the processor to sleep for 8 seconds
-    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-    pres [pres_it] = digitalRead(PDPIN);
-    if (pres_it < 127) {    
-    pres_it++;
-    }
-    else { // The array is full, start again
-    pres_it = 0;
-    pres [0] = pres [127];    
-    
-    }
-  }
-  
-  for ( int x = 0; x < fours; x++) {
-    // put the processor to sleep for 4 seconds
-    LowPower.powerDown(SLEEP_4S, ADC_OFF, BOD_OFF);
-  }
-  for ( int x = 0; x < twos; x++) {
-    // put the processor to sleep for 2 seconds
-    LowPower.powerDown(SLEEP_2S, ADC_OFF, BOD_OFF);
-  }
-  for ( int x = 0; x < ones; x++) {
-    // put the processor to sleep for 1 seconds
-    LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF);
-  }
-  addMillis(sleepyTime * 1000);
-  }
-    
-}
-
-
 
 long readVcc() {
   long result;
@@ -270,29 +186,20 @@ long readVcc() {
 }
 
 
-void updateEnvParameters()
-{
-  // Read PIR SR-501
-  int somme = 0;
-  for (int i = 0 ; i <= pres_it ; i++)
-    {
-        somme += (int)pres[i] ; //somme des valeurs (db) du tableau
-    }   
 
-  pres_avg = (float)somme / ((float)pres_it+1) ; //valeur moyenne
-  pres_it = 0; // reset presence counter
+void updateEnvParameters() // place here your sensing
+{  
   
-  batvalue = (int)(readVcc()/10);  // readVCC returns in tens of mVolt for Cayenne Payload
+  batvalue = (int)(readVcc()/10);  // readVCC returns in tens of mVolt 
+
   
- 
+
+
   #ifdef SHOW_DEBUGINFO
   // print out the value you read:
   Serial.print("Vbatt : ");
   Serial.println(batvalue);
-  Serial.print("Average Presence : ");
-  Serial.println(pres_avg);
-  #endif
-  
+  #endif 
 }
 
 
@@ -322,12 +229,14 @@ void onEvent (ev_t ev) {
     case EV_JOINING:
     #ifdef SHOW_DEBUGINFO
     debugPrintLn(F("EV_JOINING"));
-    #endif      
+    #endif
+    setColor(0, 255, 255);   //RED   
       break;
     case EV_JOINED:
     #ifdef SHOW_DEBUGINFO
     debugPrintLn(F("EV_JOINED"));
-    #endif      
+    #endif
+    setColor(255, 255, 0); //GREEN  
       setDataRate();      
       // Ok send our first data in 10 ms
       os_setTimedCallback(&sendjob, os_getTime() + ms2osticks(10), do_send);
@@ -362,18 +271,53 @@ void onEvent (ev_t ev) {
       #ifdef SHOW_DEBUGINFO
       debugPrintLn(F("Received ack"));
       #endif
-        
+              
       if (LMIC.dataLen) {
         #ifdef SHOW_DEBUGINFO
-        debugPrintLn(F("Received "));
-        debugPrintLn(LMIC.dataLen);
-        debugPrintLn(F(" bytes of payload"));
-        #endif 
+        debugPrint(F("Received "));
+        debugPrint(LMIC.dataLen/4);
+        debugPrintLn(F(" downlink(s)"));
+        for (int i = 0; i < LMIC.dataLen; i++) {
+        if (LMIC.frame[LMIC.dataBeg + i] < 0x10) {
+            Serial.print(F("0"));
+        }
+        Serial.print(LMIC.frame[LMIC.dataBeg + i], HEX);
+    }
+    Serial.println();
+    #endif 
+     
+      for(int i = 0; i < LMIC.dataLen/4;i++){
+        
+        switch (LMIC.frame[LMIC.dataBeg+4*i]){
+        case 0x06 :
+        LED_RED = (word(LMIC.frame[LMIC.dataBeg+1],LMIC.frame[LMIC.dataBeg+2]))/100; // Converter download payload in int
+        #ifdef SHOW_DEBUGINFO
+        Serial.println(LED_RED);
+        #endif
+        break;
        
+        case 0x07 :
+        LED_BLUE = (word(LMIC.frame[LMIC.dataBeg+1],LMIC.frame[LMIC.dataBeg+2]))/100; // Converter download payload in int
+        #ifdef SHOW_DEBUGINFO
+        Serial.println(LED_BLUE);
+        #endif
+        break;
+
+        case 0x08 :
+        LED_GREEN = (word(LMIC.frame[LMIC.dataBeg+1],LMIC.frame[LMIC.dataBeg+2]))/100; // Converter download payload in int
+        #ifdef SHOW_DEBUGINFO
+        Serial.println(LED_GREEN);
+        #endif
+        break;
+        }
       }
-            // Schedule next transmission
+     }
+     delay(5);
+      setColor(255-LED_RED, 255-LED_BLUE, 255-LED_GREEN);
+     delay(5000);
+           
+       // Schedule next transmission
       setDataRate();
-      do_sleep(TX_INTERVAL);
       os_setCallback(&sendjob, do_send);
       break;
     case EV_LOST_TSYNC:
@@ -410,7 +354,6 @@ void onEvent (ev_t ev) {
   }
 }
 
-
 void do_send(osjob_t* j) {
   // Check if there is not a current TX/RX job running
   if (LMIC.opmode & OP_TXRXPEND) {
@@ -419,63 +362,63 @@ void do_send(osjob_t* j) {
     // Prepare upstream data transmission at the next possible time.
     // Here the sensor information should be retrieved
     
-    updateEnvParameters();
-       
+    updateEnvParameters(); // Sensing parameters are updated
+   
 
 #ifdef SHOW_DEBUGINFO
-
     debugPrint(F("BV="));
     debugPrintLn(batvalue);
-    debugPrint(F("P="));
-    debugPrintLn(presence);
 #endif
-    
-    int bat = batvalue; // Cayenne analog output is 0.01 Signed
-    boolean p = presence; // Presence indicator
-    int p_avg = (int) 10000 * pres_avg; // Cayenne analog output is 0.01 Signed and PIR sensor will be in %
 
-    unsigned char mydata[8];
-    mydata[0] = 0x1;
-    mydata[1] = 0x2;
+// Formatting for Cayenne LPP
+    
+    
+    int bat = batvalue; // multifly by 10 for V in Cayenne
+
+    unsigned char mydata[16];
+    mydata[0] = 0x2;  // 2nd Channel
+    mydata[1] = 0x2;  // Analog Value
     mydata[2] = bat >> 8;
     mydata[3] = bat & 0xFF;
-    mydata[4] = 0x2;
-    mydata[5] = 0x2;
-    mydata[6] = p_avg>> 8;
-    mydata[7] = p_avg & 0xFF;
+    mydata[4] = 0x6;  // 6th Channel
+    mydata[5] = 0x3;  // Analog Value PWM red
+    mydata[6] = LED_RED >> 8;
+    mydata[7] = LED_RED & 0xFF;
+    mydata[8] = 0x7;  // 7th Channel
+    mydata[9] = 0x3;  // Analog Value PWM red
+    mydata[10] = LED_BLUE >> 8;
+    mydata[11] = LED_BLUE & 0xFF;
+    mydata[12] = 0x8;  // 8th Channel
+    mydata[13] = 0x3;  // Analog Value PWM red
+    mydata[14] = LED_GREEN >> 8;
+    mydata[15] = LED_GREEN & 0xFF;
     
-
     LMIC_setTxData2(1, mydata, sizeof(mydata), 0);
     debugPrintLn(F("PQ")); //Packet queued
-
-
-    if ( p_avg == 0) {
-      
-      waiting_presence++; // if no presence is detected, activate the waiting presence mode
-        }
-      else {
-      waiting_presence = 0; // if a presence is detected during the slot, start again the waiting presence counter
-        }
-      
   }
   // Next TX is scheduled after TX_COMPLETE event.
 }
+
 
 void lmicStartup() {
   // Reset the MAC state. Session and pending data transfers will be discarded.
   LMIC_reset();
 
-  LMIC_setLinkCheckMode(1);
-  LMIC_setAdrMode(1);
-  LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100); // Increase window time for clock accuracy problem
+    LMIC_setLinkCheckMode(1);
+    LMIC_setAdrMode(1);
+    LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100); // Increase window time for clock accuracy problem
   
   
 
+  
   // Start job (sending automatically starts OTAA too)
   // Join the network, sending will be
   // started after the event "Joined"
   LMIC_startJoining();
 }
+
+
+// ---------------------------------------------------------------------------------
 
 void setup() {
   Serial.begin(115200);
@@ -489,18 +432,24 @@ void setup() {
   #endif
   
   Wire.begin();
-  pinMode(PDPIN, INPUT);
-  
+
+  pinMode(GREEN, OUTPUT);
+  pinMode(BLUE, OUTPUT);
+  pinMode(RED, OUTPUT);
+  digitalWrite(GREEN, HIGH);
+  digitalWrite(BLUE, HIGH);
+  digitalWrite(RED, HIGH);
+
   updateEnvParameters(); // To have value for the first Tx
   
 
   // LMIC init
+
   os_init();
-  lmicStartup();
+  lmicStartup();  
 
 }
 
 void loop() {
   os_runloop_once();
 }
-
