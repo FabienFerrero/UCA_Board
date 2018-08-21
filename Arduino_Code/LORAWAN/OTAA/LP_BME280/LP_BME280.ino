@@ -40,23 +40,7 @@
 
 //Sensors librairies
 
-#include <VL53L0X.h>
-
-// Uncomment this line to use long range mode. This
-// increases the sensitivity of the sensor and extends its
-// potential range, but increases the likelihood of getting
-// an inaccurate reading because of reflections from objects
-// other than the intended target. It works best in dark
-// conditions.
-
-#define LONG_RANGE
-
-// Uncomment ONE of these two lines to get
-// - higher speed at the cost of lower accuracy OR
-// - higher accuracy at the cost of lower speed
-
-//#define HIGH_SPEED
-//#define HIGH_ACCURACY
+#include <BME280I2C.h>
 
 #define debugSerial Serial
 #define SHOW_DEBUGINFO
@@ -97,11 +81,14 @@ static osjob_t sendjob;
 // global enviromental parameters : Place here the environment data you want to measure
 
 
-static float dist = 0.0;
+static float temp = 0.0;
+static float hum = 0.0;
+static float pres = 0.0;
 static float batvalue = 0.0;
 
 
-VL53L0X sensor; 
+BME280I2C bme;    // Default : forced mode, standby time = 1000 ms
+                  // Oversampling = pressure ×1, temperature ×1, humidity ×1, filter off,
 
 
 
@@ -222,18 +209,23 @@ void updateEnvParameters() // place here your sensing
   
   batvalue = (int)(readVcc()/10);  // readVCC returns in tens of mVolt 
 
-  dist = sensor.readRangeSingleMillimeters();
+  BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
+  BME280::PresUnit presUnit(BME280::PresUnit_Pa);
+  bme.read(pres, temp, hum, tempUnit, presUnit);
 
 
   #ifdef SHOW_DEBUGINFO
   // print out the value you read:
-  Serial.print(dist);
-  Serial.println("mm");
+  Serial.print(temp);
+  Serial.println("°C");
+  Serial.print(hum);
+  Serial.println("%");
+  Serial.print(pres);
+  Serial.println("Pa");
   Serial.print("Vbatt : ");
   Serial.println(batvalue);
   #endif 
 }
-
 
 
 void onEvent (ev_t ev) {
@@ -322,33 +314,67 @@ void do_send(osjob_t* j) {
    
 
 #ifdef SHOW_DEBUGINFO
-    debugPrint(F("D="));
-    debugPrintLn(dist);
+    debugPrint(F("T="));
+    debugPrintLn(temp);
     debugPrint(F("BV="));
     debugPrintLn(batvalue);
 #endif
 
 // Formatting for Cayenne LPP
     
-    int d = (int)((dist) * 1.0);  // multiply by 1 for Cayenne, will be given in decimeter
+    int t = (int)((temp) * 10.0);  // multiply by 10 Cayenne
+    // t = t + 40; => t [-40..+85] => [0..125] => t = t * 10; => t [0..125] => [0..1250]
+    int h = (int)(hum * 2.0); // Cayene in 0.5%
+    unsigned int p = (unsigned int)(pres / 10.0); // Cayenne in 0.1 hPa unsigned
     int bat = batvalue; // multifly by 10 for V in Cayenne
 
-    unsigned char mydata[8];
+    unsigned char mydata[15];
     mydata[0] = 0x1; // 1st Channel
-    mydata[1] = 0x2; // Analog Value
-    mydata[2] = d >> 8;
-    mydata[3] = d & 0xFF; 
+    mydata[1] = 0x67; // Temp
+    mydata[2] = t >> 8;
+    mydata[3] = t & 0xFF; 
     mydata[4] = 0x2;  // 2nd Channel
     mydata[5] = 0x2;  // Analog Value
     mydata[6] = bat >> 8;
     mydata[7] = bat & 0xFF;
-        
+    mydata[8] = 0x3;  // 3rd Channel
+    mydata[9] = 0x68;  // Humidity
+    mydata[10] = h & 0xFF;
+    mydata[11] = 0x4;  // 4th Channel
+    mydata[12] = 0x73;  // Pressure
+    mydata[13] = p >> 8;
+    mydata[14] = p & 0xFF;
+    
     LMIC_setTxData2(1, mydata, sizeof(mydata), 0);
     debugPrintLn(F("PQ")); //Packet queued
   }
   // Next TX is scheduled after TX_COMPLETE event.
 }
 
+void bmeStartup() {
+while(!bme.begin())
+  {
+    #ifdef SHOW_DEBUGINFO
+    Serial.println("Could not find BME280 sensor!");
+    #endif
+    delay(1000);
+  }
+
+  switch(bme.chipModel())
+  {
+     #ifdef SHOW_DEBUGINFO
+     case BME280::ChipModel_BME280:       
+       Serial.println("Found BME280 sensor! Success.");
+       break;
+     case BME280::ChipModel_BMP280:
+       Serial.println("Found BMP280 sensor! No Humidity available.");
+       break;
+     default:
+       Serial.println("Found UNKNOWN sensor! Error!");
+     #endif
+  }
+  
+}
 
 void lmicStartup() {
   // Reset the MAC state. Session and pending data transfers will be discarded.
@@ -376,24 +402,7 @@ void setup() {
   delay(100);
   Wire.begin();
 
-   sensor.init();
-  sensor.setTimeout(500);
-
-#if defined LONG_RANGE
-  // lower the return signal rate limit (default is 0.25 MCPS)
-  sensor.setSignalRateLimit(0.1);
-  // increase laser pulse periods (defaults are 14 and 10 PCLKs)
-  sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
-  sensor.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
-#endif
-
-#if defined HIGH_SPEED
-  // reduce timing budget to 20 ms (default is about 33 ms)
-  sensor.setMeasurementTimingBudget(20000);
-#elif defined HIGH_ACCURACY
-  // increase timing budget to 200 ms
-  sensor.setMeasurementTimingBudget(200000);
-#endif
+  bmeStartup(); // Start bme sensor
    
   updateEnvParameters(); // To have value for the first Tx
   
