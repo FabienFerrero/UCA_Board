@@ -40,13 +40,7 @@
 #include "LowPower.h"
 
 //Sensors librairies
-
-#include "DHT.h"
-#define DHTPIN 6     // what pin we're connected to
-#define DHTTYPE DHT22   // DHT 22  (AM2302)
-
-
-
+#include <SI7021.h>
 
 #define debugSerial Serial
 #define SHOW_DEBUGINFO
@@ -92,7 +86,7 @@ static float humidity = 0.0;
 static float batvalue;
 
 
-DHT dht(DHTPIN, DHTTYPE);
+SI7021 sensor;
 
 
 // Pin mapping
@@ -233,8 +227,11 @@ long readVcc() {
 
 void updateEnvParameters()
 {
-  temp = dht.readTemperature();
-  humidity = dht.readHumidity();
+ // get humidity and temperature in one shot, saves power because sensor takes temperature when doing humidity anyway
+  si7021_env data = sensor.getHumidityAndTemperature();
+  
+  temp = data.celsiusHundredths/100;
+  humidity = data.humidityBasisPoints/100;
   batvalue = (int)(readVcc()/10);  // readVCC returns in tens of mVolt 
     
 
@@ -436,6 +433,7 @@ void setup() {
   #endif
   
   Wire.begin();
+  sensor.begin();
 
   updateEnvParameters(); // To have value for the first Tx
   
