@@ -230,8 +230,8 @@ void updateEnvParameters()
  // get humidity and temperature in one shot, saves power because sensor takes temperature when doing humidity anyway
   si7021_env data = sensor.getHumidityAndTemperature();
   
-  temp = data.celsiusHundredths/100;
-  humidity = data.humidityBasisPoints/100;
+  temp = data.celsiusHundredths;
+  humidity = data.humidityBasisPoints;
   batvalue = (int)(readVcc()/10);  // readVCC returns in tens of mVolt 
     
 
@@ -239,7 +239,7 @@ void updateEnvParameters()
   // print out the value you read:
   Serial.print("Humidity : ");
   Serial.println(humidity);
-  Serial.print("TÂ°c : ");
+  Serial.print("T°c : ");
   Serial.println(temp);
   Serial.print("Vbatt : ");
   Serial.println(batvalue);
@@ -383,8 +383,8 @@ void do_send(osjob_t* j) {
     debugPrint(F("BV="));
     debugPrintLn(batvalue);
 #endif
-    int t = (int)((temp) * 10.0);
-    int h = (int)(humidity * 2.0);
+    int t = (int)((temp) / 10.0);
+    int h = (int)(humidity / 50.0);
     int bat = batvalue; // multifly by 10 for V in Cayenne
 
     unsigned char mydata[11];
