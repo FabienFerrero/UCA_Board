@@ -13,14 +13,14 @@
 //#define SignalBandwidth 31.25E3
 #define preambleLength 8
 #define codingRateDenominator 8
-#define Pow 2
+#define Pow 14
 
 //#define SHOW_DEBUGINFO    // Uncomment if you want to see info on Serial
 
 int counter = 0;
-long freq_start = 750e6;
-long freq_stop = 1000e6;
-long freq_step = 5e6;
+long freq_start = 863e6;
+long freq_stop = 870e6;
+long freq_step = 1e6;
 
 long next_freq = freq_start;
 
