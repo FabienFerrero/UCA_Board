@@ -7,6 +7,7 @@ int spreadingFactor = 12; // from 7 to 12
 long signalBandwidth = 125E3; // 7.8E3, 10.4E3, 15.6E3, 20.8E3, 31.25E3,41.7E3,62.5E3,125E3,250E3,500e3
 int codingRateDenominator=5; // from 3 to 5
 int preambleLength=8; // from 2 to 20
+string payload = "hello";
 
 #define SS 10
 #define RST 8
@@ -48,7 +49,7 @@ void loop() {
   // send packet
   
   LoRa.beginPacket();
-  LoRa.print("hello ");
+  LoRa.print(payload);
   LoRa.print(counter);
   
   LoRa.endPacket();
