@@ -55,6 +55,7 @@ int max_RSSI=-140;
 int min_RSSI=0;
 int average_RSSI=0;
 int RSSI_array[10000];
+float sqDevSum=0;
 
 
 
@@ -155,12 +156,10 @@ void loop() {
 
       if(counter >= 0){
       RSSI_array[counter]=RSSI;
+      
       }
       
-     
-      
-        
-      long freq_MHz= freq / 1e6; // freq in MHz 
+    long freq_MHz= freq / 1e6; // freq in MHz 
 
     display.clear();
     display.setFont(ArialMT_Plain_10);
@@ -174,8 +173,15 @@ void loop() {
     average_RSSI = average_RSSI + RSSI_array[i];
       }
     average_RSSI = average_RSSI / counter;
+    
+    sqDevSum=0;
+    for( int i=0; i<=counter; i++ ) {
+      sqDevSum += (float) pow(average_RSSI - RSSI_array[i], 2);
+    
+      }
+    sqDevSum = sqrt(sqDevSum /counter);
 
-    display.drawString(2, 15,"Av:"+(String)average_RSSI + "dBm" );
+    display.drawString(2, 15,"Av:"+(String)average_RSSI + "dBm Dev:"+(String)sqDevSum+"dB" );
     display.display();
 
      if(RSSI > max_RSSI && counter > 0){
