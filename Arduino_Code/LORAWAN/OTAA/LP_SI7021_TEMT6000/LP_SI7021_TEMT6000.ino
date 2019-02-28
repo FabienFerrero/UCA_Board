@@ -49,7 +49,7 @@
 
 //Define sensor PIN
 #define LAPIN A0 // PIN with Light sensor analog output 
-#define LPPIN 6 // PIN with Light power input
+#define LPPIN 4 // PIN with Light power input
 
 
 
