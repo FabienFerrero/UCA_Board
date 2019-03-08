@@ -66,6 +66,10 @@ void loop() {
     
     lastSendTime = millis();            // timestamp the message
     interval = 10000;    // 2-3 seconds
+	
+	Serial.println("Normal mode ");
+  delay (3000); // Wait for 3s in Normal mode
+	
     LoRa.sleep(); // move LoRa transciever in Sleep mode
     do_sleep(5);
     receive = 1;
@@ -167,4 +171,3 @@ void do_sleep(unsigned int sleepyTime) {
   }
   addMillis(sleepyTime * 1000);
 }
-
